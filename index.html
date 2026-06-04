@@ -261,6 +261,79 @@ function addHistoryItem(sector, color) {
         historyBox.removeChild(historyBox.lastChild);
     }
 }
+        // --- ЛОГИКА ДЛЯ АДМИН-ПАНЕЛИ ---
+
+// Перехватываем стандартную авторизацию, чтобы добавить проверку на админа
+const originalHandleAuth = handleAuth;
+handleAuth = function() {
+    const u = document.getElementById("auth-username").value.trim();
+    const p = document.getElementById("auth-password").value.trim();
+    if(!u || !p) { alert("Заполните все поля!"); return; }
+    
+    if(u === "admin" && p === "admin123") {
+        document.getElementById("authBlock").style.display = "none";
+        document.getElementById("adminBlock").style.display = "block";
+        renderAdminPanel();
+        return;
+    }
+    originalHandleAuth();
+}
+
+function renderAdminPanel() {
+    const listContainer = document.getElementById("admin-users-list");
+    let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
+    listContainer.innerHTML = "";
+    
+    if(Object.keys(users).length === 0) {
+        listContainer.innerHTML = "<div style='color: #64748b; text-align:center; padding:10px;'>Игроков пока нет</div>";
+        return;
+    }
+    
+    for(let name in users) {
+        const userRow = document.createElement("div");
+        userRow.style.display = "flex";
+        userRow.style.justifyContent = "space-between";
+        userRow.style.alignItems = "center";
+        userRow.style.padding = "10px 0";
+        userRow.style.borderBottom = "1px solid #222f4d";
+        
+        userRow.innerHTML = 
+            "<span style='font-weight:600; color:#fff;'>" + name + " (<span style='color:#22c55e'>" + users[name].balance + " 🪙</span>)</span>" +
+            "<div style='display:flex; gap:5px;'>" +
+                "<button style='padding:5px 10px; background:#22c55e; border:none; border-radius:6px; color:#fff; font-weight:700; cursor:pointer;' onclick='changePlayerBalance(\""+name+"\", 500)'>+500</button>" +
+                "<button style='padding:5px 10px; background:#ef4444; border:none; border-radius:6px; color:#fff; font-weight:700; cursor:pointer;' onclick='changePlayerBalance(\""+name+"\", -500)'>-500</button>" +
+                "<button style='padding:5px 8px; background:#3b82f6; border:none; border-radius:6px; color:#fff; font-size:11px; cursor:pointer;' onclick='deletePlayer(\""+name+"\")'>❌</button>" +
+            "</div>";
+            
+        listContainer.appendChild(userRow);
+    }
+}
+
+function changePlayerBalance(name, amount) {
+    let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
+    if(users[name]) {
+        users[name].balance = Math.max(0, users[name].balance + amount);
+        localStorage.setItem("roulette_users", JSON.stringify(users));
+        renderAdminPanel();
+    }
+}
+
+function deletePlayer(name) {
+    if(!confirm("Удалить игрока " + name + "?")) return;
+    let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
+    if(users[name]) {
+        delete users[name];
+        localStorage.setItem("roulette_users", JSON.stringify(users));
+        renderAdminPanel();
+    }
+}
+
+function logoutAdmin() {
+    document.getElementById("adminBlock").style.display = "none";
+    document.getElementById("authBlock").style.display = "block";
+    document.getElementById("auth-username").value = "";
+    document.getElementById("auth-password").value = "";
+}
 </script>
 </body>
 </html>
