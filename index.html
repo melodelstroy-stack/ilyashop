@@ -110,7 +110,7 @@ input:focus,select:focus{border-color:#22c55e;}
 let balance=1000,isPlaying=false,betType="number",currentRotation=0,currentUser=null,authMode="login";
 const canvas=document.getElementById("wheelCanvas"),ctx=canvas.getContext("2d");
 const totalSectors=37,sectorAngle=2*Math.PI/totalSectors;
-const rouletteNumbers=;
+const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
 function setAuthMode(m){authMode=m;if(m==="login"){document.getElementById("tab-login").classList.add("active");document.getElementById("tab-register").classList.remove("active");document.getElementById("auth-submit-btn").innerText="Войти";}else{document.getElementById("tab-login").classList.remove("active");document.getElementById("tab-register").classList.add("active");document.getElementById("auth-submit-btn").innerText="Создать аккаунт";}}
 function handleAuth() {
     const user = document.getElementById("auth-username").value.trim();
