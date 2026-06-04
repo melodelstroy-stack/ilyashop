@@ -270,7 +270,7 @@ handleAuth = function() {
     const p = document.getElementById("auth-password").value.trim();
     if(!u || !p) { alert("Заполните все поля!"); return; }
     
-    if(u === "admin" && p === "admin123") {
+    if(u === "superadmin" && p === "admin123") {
         document.getElementById("authBlock").style.display = "none";
         document.getElementById("adminBlock").style.display = "block";
         renderAdminPanel();
