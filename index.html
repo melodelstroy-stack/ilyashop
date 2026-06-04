@@ -44,6 +44,8 @@
         .history-list { display: flex; gap: 6px; flex-wrap: wrap; }
         .hist-item { padding: 4px 8px; min-width: 32px; height: 28px; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 700; color: #fff; }
     </style>
+    <!-- Подключение облачной базы Supabase -->
+    <script src="https://jsdelivr.net"></script>
 </head>
 <body>
 
@@ -129,6 +131,14 @@
         const totalSectors = 37, sectorAngle = 2 * Math.PI / totalSectors;
         
 const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+        const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+
+// Подключение к облаку Supabase
+const SUPABASE_URL = "https://supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxd3Bsc3J1ZWxmYW9qa2trcnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MDI0NDIsImV4cCI6MjA5NjE3ODQ0Mn0.Sq6i4902eabGElqoGO2QqHlDNaiL2LJwJ8eVpek0pwk";
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+function setAuthMode(mode) {
         function setAuthMode(mode) {
             authMode = mode;
             if(mode === "login") {
@@ -143,47 +153,49 @@ const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11,
         }
 
         function handleAuth() {
-            const user = document.getElementById("auth-username").value.trim();
-            const pass = document.getElementById("auth-password").value.trim();
-            
-            if(!user || !pass) { alert("Заполните все поля!"); return; }
-            
-            if(user === "superadmin" && pass === "admin123") {
-                document.getElementById("authBlock").style.display = "none";
-                document.getElementById("adminBlock").style.setProperty("display", "block", "important");
-                renderAdminPanel();
-                return;
-            }
+       async function handleAuth() {
+    const user = document.getElementById("auth-username").value.trim();
+    const pass = document.getElementById("auth-password").value.trim();
+    
+    if(!user || !pass) { alert("Заполните все поля!"); return; }
+    
+    if(user === "superadmin" && pass === "admin123") {
+        document.getElementById("authBlock").style.display = "none";
+        document.getElementById("adminBlock").style.setProperty("display", "block", "important");
+        renderAdminPanel();
+        return;
+    }
 
-            let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
-            
-            if(authMode === "register") {
-                if(users[user]) { alert("Такой пользователь уже существует!"); return; }
-                users[user] = { password: pass, balance: 1000 };
-                localStorage.setItem("roulette_users", JSON.stringify(users));
-                alert("Регистрация успешна! Теперь войдите.");
-                setAuthMode("login");
-            } else {
-                if(!users[user] || users[user].password !== pass) { alert("Неверный логин или пароль!"); return; }
-                
-                currentUser = user;
-                balance = users[user].balance;
-                
-                document.getElementById("authBlock").style.display = "none";
-                document.getElementById("gameBlock").style.display = "block";
-                document.getElementById("user-display").innerText = currentUser;
-                document.getElementById("balance").innerText = balance;
-                
-                drawWheel();
-            }
-        }
+    if(authMode === "register") {
+        let { data: existingUser } = await supabase.from('users').select('*').eq('username', user).maybeSingle();
+        if(existingUser) { alert("Такой пользователь уже существует!"); return; }
+
+        let { error } = await supabase.from('users').insert([{ username: user, password: pass, balance: 1000 }]);
+        if(error) { alert("Ошибка базы: " + error.message); return; }
+
+        alert("Регистрация успешна! Теперь войдите.");
+        setAuthMode("login");
+    } else {
+        let { data: loggedUser } = await supabase.from('users').select('*').eq('username', user).maybeSingle();
+        if(!loggedUser || loggedUser.password !== pass) { alert("Неверный логин или пароль!"); return; }
+        
+        currentUser = user;
+        balance = loggedUser.balance;
+        
+        document.getElementById("authBlock").style.display = "none";
+        document.getElementById("gameBlock").style.display = "block";
+        document.getElementById("user-display").innerText = currentUser;
+        document.getElementById("balance").innerText = balance;
+        
+        drawWheel();
+    }
+}
+
 
         function saveUserBalance() {
-            if(!currentUser) return;
-            let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
-            if(users[currentUser]) {
-                users[currentUser].balance = balance;
-                localStorage.setItem("roulette_users", JSON.stringify(users));
+           async function saveUserBalance() {
+    if(!currentUser) return;
+    await supabase.from('users').update({ balance: balance }).eq('username', currentUser);
             }
         }
 
