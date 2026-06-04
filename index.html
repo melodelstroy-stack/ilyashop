@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Илья Shop — Заявка</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f8fafc; color: #0f172a; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        header { width: 100%; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; z-index: 100; }
+        .logo { font-size: 20px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px; }
+        .logo span { color: #3b82f6; }
+        
+        .nav-buttons { display: flex; gap: 12px; }
+        .nav-btn { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; transition: 0.2s; border: none; }
+        .btn-buy { background-color: #22c55e; color: white; }
+        .btn-buy:hover { background-color: #16a34a; }
+        .btn-sell { background-color: #ef4444; color: white; }
+        .btn-sell:hover { background-color: #dc2626; }
+        
+        .main-container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 120px 20px 40px; }
+        
+        /* Стили формы заявки */
+        .form-card { background: #ffffff; padding: 40px; border-radius: 20px; max-width: 450px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        h2 { font-size: 22px; margin-bottom: 8px; text-align: center; color: #0f172a; }
+        .subtitle { color: #64748b; font-size: 14px; text-align: center; margin-bottom: 25px; }
+        
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #334155; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; }
+        input:focus, textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        textarea { resize: vertical; min-height: 80px; }
+        
+        .btn-submit { display: block; width: 100%; background: #3b82f6; color: #fff; padding: 14px; border-radius: 10px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .btn-submit:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Илья <span>Shop</span></div>
+        <div class="nav-buttons">
+            <button class="nav-btn btn-buy">Купить</button>
+            <button class="nav-btn btn-sell">Продать</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- КАРТОЧКА С ФОРМОЙ -->
+        <div class="form-card">
+            <h2>Оставить заявку</h2>
+            <p class="subtitle">Заполните форму, и мы сразу свяжемся с вами</p>
+            
+            <!-- ВАЖНО: Сюда мы потом вставим ссылку для отправки -->
+            <form action="https://form.taxi/s/6qa8kcj7" method="POST">
+                <div class="form-group">
+                    <label for="name">Ваше имя</label>
+                    <input type="text" id="name" name="Имя" placeholder="Иван" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Телефон или Telegram</label>
+                    <input type="text" id="phone" name="Контакты" placeholder="+7 (999) 000-00-00 или @username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Что хотите купить / продать?</label>
+                    <textarea id="message" name="Сообщение" placeholder="Опишите ваш запрос..."></textarea>
+                </div>
+<button type="submit" class="btn-submit">Отправить заявку</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
