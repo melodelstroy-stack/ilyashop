@@ -272,7 +272,7 @@ handleAuth = function() {
     
     if(u === "superadmin" && p === "admin123") {
         document.getElementById("authBlock").style.display = "none";
-        document.getElementById("adminBlock").style.display = "block";
+document.getElementById("adminBlock").style.setProperty("display", "block", "important");
         renderAdminPanel();
         return;
     }
