@@ -305,25 +305,23 @@ const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11,
         }
 
         function renderAdminPanel() {
-            const listContainer = document.getElementById("admin-users-list");
-            let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
-            listContainer.innerHTML = "";
-            
-            if(Object.keys(users).length === 0) {
-                listContainer.innerHTML = "<div style='color: #64748b; text-align:center; padding:10px;'>Игроков пока нет</div>";
-                return;
-            }
-            
-            for(let name in users) {
-                const userRow = document.createElement("div");
-                userRow.style.display = "flex";
-                userRow.style.justifyContent = "space-between";
-                userRow.style.alignItems = "center";
-                userRow.style.padding = "10px 0";
-                userRow.style.borderBottom = "1px solid #222f4d";
-                
-                userRow.innerHTML = 
-                    "<span style='font-weight:600; color:#fff;'>" + name + " (<span style='color:#22c55e'>" + users[name].balance + " 🪙</span>)</span>" +
+    const listContainer = document.getElementById("admin-users-list");
+    let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
+    listContainer.innerHTML = "";
+    
+    if(Object.keys(users).length === 0) {
+        listContainer.innerHTML = "<div style='color: #64748b; text-align:center; padding:10px;'>Игроков пока нет</div>";
+        return;
+    }
+    
+    for(let name in users) {
+        const userRow = document.createElement("div");
+        userRow.style.display = "flex";
+        userRow.style.justifyContent = "space-between";
+        userRow.style.alignItems = "center";
+        userRow.style.padding = "10px 0";
+        userRow.style.borderBottom = "1px solid #222f4d";
+        
         userRow.innerHTML = 
             "<span style='font-weight:600; color:#fff;'>" + name + " (<span style='color:#22c55e'>" + users[name].balance + " 🪙</span>)</span>" +
             "<div style='display:flex; gap:5px;'>" +
@@ -333,7 +331,7 @@ const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11,
             "</div>";
             
         listContainer.appendChild(userRow);
-       }
+    }
 }
 
 function changePlayerBalance(name, amount) {
