@@ -45,7 +45,7 @@
         .hist-item { padding: 4px 8px; min-width: 32px; height: 28px; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 700; color: #fff; }
     </style>
     <!-- Подключение облачной базы Supabase -->
-    <script src="https://jsdelivr.net"></script>
+<script src="https://jsdelivr.net"></script>
 </head>
 <body>
 
@@ -133,10 +133,10 @@
 const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
         const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
 
-// Подключение к облаку Supabase
-const SUPABASE_URL = "https://supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxd3Bsc3J1ZWxmYW9qa2trcnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MDI0NDIsImV4cCI6MjA5NjE3ODQ0Mn0.Sq6i4902eabGElqoGO2QqHlDNaiL2LJwJ8eVpek0pwk";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Подключение к облаку Supabase
+        const SUPABASE_URL = "https://qqwplsruelfaojkkkrsx.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxd3Bsc3J1ZWxmYW9qa2trcnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MDI0NDIsImV4cCI6MjA5NjE3ODQ0Mn0.Sq6i4902eabGElqoGO2QqHlDNaiL2LJwJ8eVpek0pwk";
+        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
 function setAuthMode(mode) {
         function setAuthMode(mode) {
