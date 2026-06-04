@@ -1,1 +1,40 @@
-рулетку</button><div class="history"><h3>Прошлые игры:</h3><div class="history-list" id="history-box"></div></div></div><script>let balance=1000,isPlaying=!1,betType="number",currentRotation=0;const canvas=document.getElementById("wheelCanvas"),ctx=canvas.getContext("2d"),totalSectors=37,sectorAngle=2*Math.PI/totalSectors;function drawWheel(){const e=canvas.width/2;ctx.clearRect(0,0,canvas.width,canvas.height);for(let t=0;t<totalSectors;t++){const a=t*sectorAngle-Math.PI/2-sectorAngle/2,n=a+sectorAngle;0===t?ctx.fillStyle="#22c55e":t%2==1?ctx.fillStyle="#ef4444":ctx.fillStyle="#1e293b",ctx.beginPath(),ctx.moveTo(e,e),ctx.arc(e,e,e-10,a,n),ctx.closePath(),ctx.fill(),ctx.strokeStyle="#2d3d5a",ctx.lineWidth=1,ctx.stroke(),ctx.save(),ctx.translate(e,e),ctx.rotate(a+sectorAngle/2),ctx.textAlign="right",ctx.textBaseline="middle",ctx.fillStyle="#ffffff",ctx.font="bold 20px Segoe UI",ctx.fillText(t,e-30,0),ctx.restore()}ctx.beginPath(),ctx.arc(e,e,.6*e,0,2*Math.PI),ctx.fillStyle="#151d30",ctx.fill(),ctx.strokeStyle="#222f4d",ctx.lineWidth=6,ctx.stroke()}function setBetType(e){isPlaying||(betType=e,"number"===e?(document.getElementById("type-num-btn").classList.add("active"),document.getElementById("type-color-btn").classList.remove("active"),document.getElementById("group-number").style.display="block",document.getElementById("group-color").style.display="none"):(document.getElementById("type-num-btn").classList.remove("active"),document.getElementById("type-color-btn").classList.add("active"),document.getElementById("group-number").style.display="none",document.getElementById("group-color").style.display="block"))}function startRoulette(){if(isPlaying)return;let e=parseInt(document.getElementById("bet-amount").value),t=parseInt(document.getElementById("bet-number").value),a=document.getElementById("bet-color").value;if(isNaN(e)||e<=0||e>balance)return void alert("Ошибка в ставке или балансе!");if("number"===betType&&(isNaN(t)||t<0||t>36))return void alert("Число от 0 до 36!");balance-=e,document.getElementById("balance").innerText=balance,document.getElementById("status").innerText="Колесо крутится...",isPlaying=!0;const n=Math.floor(37*Math.random()),l=n*(360/37),s=(360-l)%360;currentRotation+=7200+s,canvas.style.transform=`rotate(${currentRotation}deg)`,setTimeout(()=>{let l=!1,s=0,c=0===n?"zero":n%2==1?"red":"black";"number"===betType?t===n&&(l=!0,s=36*e):"color"===betType&&a===c&&(l=!0,s=2*e);let o="zero"===c?"ЗЕЛЁНОЕ ЗЕРО":"red"===c?"КРАСНОЕ":"ЧЁРНОЕ";l?(balance+=s,document.getElementById("status").innerText=`🎉 ПОБЕДА! Выпало число [${n}] (${o}). Плюс ${s} монет!`):document.getElementById("status").innerText=`❌ Проигрыш. Выпало число [${n}] (${o}).`;let i="zero"===c?"#22c55e":"red"===c?"#ef4444":"#334155";updateHistory(n,i),document.getElementById("balance").innerText=balance,isPlaying=!1},15e3)}function updateHistory(e,t){let a=document.getElementById("history-box"),n=document.createElement("div");n.className="hist-item",n.style.background=t,n.innerText=e,a.insertBefore(n,a.firstChild),a.children.length>10&&a.removeChild(a.lastChild)}drawWheel();</script></body></html>
+balance -= e;
+            document.getElementById("balance").innerText = balance;
+            document.getElementById("status").innerText = "Колесо крутится...";
+            isPlaying = true;
+            
+            const n = Math.floor(37 * Math.random());
+            const l = n * (360 / 37), s = (360 - l) % 360;
+            currentRotation += 7200 + s;
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
+            
+            setTimeout(() => {
+                let l = false, s = 0, c = 0 === n ? "zero" : n % 2 == 1 ? "red" : "black";
+                if ("number" === betType) { if (t === n) { l = true; s = 36 * e; } }
+                else if ("color" === betType && a === c) { l = true; s = 2 * e; }
+                
+                let o = "zero" === c ? "ЗЕЛЁНОЕ ЗЕРО" : "red" === c ? "КРАСНОЕ" : "ЧЁРНОЕ";
+                if (l) {
+                    balance += s;
+                    document.getElementById("status").innerText = `🎉 ПОБЕДА! Выпало число [${n}] (${o}). Плюс ${s} монет!`;
+                } else {
+                    document.getElementById("status").innerText = `❌ Проигрыш. Выпало число [${n}] (${o}).`;
+                }
+                
+                let i = "zero" === c ? "#22c55e" : "red" === c ? "#ef4444" : "#334155";
+                updateHistory(n, i);
+                document.getElementById("balance").innerText = balance;
+                isPlaying = false;
+            }, 15000);
+        }
+        
+        function updateHistory(e, t) {
+            let a = document.getElementById("history-box"), n = document.createElement("div");
+            n.className = "hist-item"; n.style.background = t; n.innerText = e;
+            a.insertBefore(n, a.firstChild);
+            if (a.children.length > 10) a.removeChild(a.lastChild);
+        }
+        drawWheel();
+    </script>
+</body>
+</html>
