@@ -239,7 +239,7 @@ const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11,
             }
         }
         
-        function startRoulette() {
+async function startRoulette() {
             if (isPlaying) return;
             let e = parseInt(document.getElementById("bet-amount").value);
             let t = parseInt(document.getElementById("bet-number").value);
@@ -250,7 +250,7 @@ const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11,
             
             balance -= e;
             document.getElementById("balance").innerText = balance;
-            saveUserBalance();
+await saveUserBalance();
             
             document.getElementById("status").innerText = "Колесо крутится...";
             isPlaying = true;
@@ -288,7 +288,7 @@ const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11,
                 }
                 
                 document.getElementById("balance").innerText = balance;
-                saveUserBalance();
+await saveUserBalance();
                 addHistoryItem(winningNumber, sectorColor);
             }, 6000); 
         }
