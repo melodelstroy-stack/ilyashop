@@ -105,6 +105,17 @@ input:focus,select:focus{border-color:#22c55e;}
 <h3>Прошлые игры:</h3>
 <div class="history-list" id="history-box"></div>
 </div>
+        <!-- БЛОК АДМИН-ПАНЕЛИ -->
+    <div class="game-card" id="adminBlock" style="display: none; max-width: 600px; margin: 20px auto;">
+        <div class="top-bar">
+            <div class="logo" style="color: #f59e0b;">⚙️ АДМИН-ПАНЕЛЬ</div>
+            <button class="btn-logout" onclick="logoutAdmin()">Выйти</button>
+        </div>
+        <div class="status-text" style="color: #64748b; font-size: 13px; text-transform: uppercase;">Управление балансом игроков</div>
+        <div style="background: #1b253d; padding: 15px; border-radius: 16px; border: 1px solid #283759; text-align: left; max-height: 300px; overflow-y: auto;" id="admin-users-list">
+            <!-- Сюда JS будет подставлять список юзеров -->
+        </div>
+    </div>
 </div>
 <script>
 let balance=1000,isPlaying=false,betType="number",currentRotation=0,currentUser=null,authMode="login";
