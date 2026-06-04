@@ -310,17 +310,19 @@ const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11,
             }
         }
 
-        function renderAdminPanel() {
+async function renderAdminPanel() {
     const listContainer = document.getElementById("admin-users-list");
-    let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
+    listContainer.innerHTML = "<div style='color: #64748b; text-align:center;'>Загрузка игроков из сети...</div>";
+    
+    let { data: users, error } = await supabase.from('users').select('*').order('username', { ascending: true });
     listContainer.innerHTML = "";
     
-    if(Object.keys(users).length === 0) {
-        listContainer.innerHTML = "<div style='color: #64748b; text-align:center; padding:10px;'>Игроков пока нет</div>";
+    if(!users || users.length === 0) {
+        listContainer.innerHTML = "<div style='color: #64748b; text-align:center; padding:10px;'>Игроков в базе пока нет</div>";
         return;
     }
     
-    for(let name in users) {
+    users.forEach(user => {
         const userRow = document.createElement("div");
         userRow.style.display = "flex";
         userRow.style.justifyContent = "space-between";
@@ -329,34 +331,27 @@ const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11,
         userRow.style.borderBottom = "1px solid #222f4d";
         
         userRow.innerHTML = 
-            "<span style='font-weight:600; color:#fff;'>" + name + " (<span style='color:#22c55e'>" + users[name].balance + " 🪙</span>)</span>" +
+            "<span style='font-weight:600; color:#fff;'>" + user.username + " (<span style='color:#22c55e'>" + user.balance + " 🪙</span>)</span>" +
             "<div style='display:flex; gap:5px;'>" +
-                "<button style='padding:5px 10px; background:#22c55e; border:none; border-radius:6px; color:#fff; font-weight:700; cursor:pointer;' onclick='changePlayerBalance(\""+name+"\", 500)'>+500</button>" +
-                "<button style='padding:5px 10px; background:#ef4444; border:none; border-radius:6px; color:#fff; font-weight:700; cursor:pointer;' onclick='changePlayerBalance(\""+name+"\", -500)'>-500</button>" +
-                "<button style='padding:5px 8px; background:#3b82f6; border:none; border-radius:6px; color:#fff; font-size:11px; cursor:pointer;' onclick='deletePlayer(\""+name+"\")'>❌</button>" +
+                "<button style='padding:5px 10px; background:#22c55e; border:none; border-radius:6px; color:#fff; font-weight:700; cursor:pointer;' onclick='changePlayerOnlineBalance(\""+user.username+"\", "+user.balance+", 500)'>+500</button>" +
+                "<button style='padding:5px 10px; background:#ef4444; border:none; border-radius:6px; color:#fff; font-weight:700; cursor:pointer;' onclick='changePlayerOnlineBalance(\""+user.username+"\", "+user.balance+", -500)'>-500</button>" +
+                "<button style='padding:5px 8px; background:#3b82f6; border:none; border-radius:6px; color:#fff; font-size:11px; cursor:pointer;' onclick='deletePlayerOnline(\""+user.username+"\")'>❌</button>" +
             "</div>";
             
         listContainer.appendChild(userRow);
-    }
+    });
 }
 
-function changePlayerBalance(name, amount) {
-    let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
-    if(users[name]) {
-        users[name].balance = Math.max(0, users[name].balance + amount);
-        localStorage.setItem("roulette_users", JSON.stringify(users));
-        renderAdminPanel();
-    }
+async function changePlayerOnlineBalance(name, currentBal, amount) {
+    let newBalance = Math.max(0, currentBal + amount);
+    await supabase.from('users').update({ balance: newBalance }).eq('username', name);
+    renderAdminPanel();
 }
 
-function deletePlayer(name) {
-    if(!confirm("Удалить игрока " + name + "?")) return;
-    let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
-    if(users[name]) {
-        delete users[name];
-        localStorage.setItem("roulette_users", JSON.stringify(users));
-        renderAdminPanel();
-    }
+async function deletePlayerOnline(name) {
+    if(!confirm("Удалить игрока " + name + " из базы сети?")) return;
+    await supabase.from('users').delete().eq('username', name);
+    renderAdminPanel();
 }
 
 function logoutAdmin() {
@@ -364,6 +359,8 @@ function logoutAdmin() {
     document.getElementById("authBlock").style.display = "block";
     document.getElementById("auth-username").value = "";
     document.getElementById("auth-password").value = "";
+}
+
 }
 </script>
 </body>
