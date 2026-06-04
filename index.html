@@ -329,7 +329,7 @@ function deletePlayer(name) {
 }
 
 function logoutAdmin() {
-    document.getElementById("adminBlock").style.display = "none";
+document.getElementById("adminBlock").style.setProperty("display", "none", "important");
     document.getElementById("authBlock").style.display = "block";
     document.getElementById("auth-username").value = "";
     document.getElementById("auth-password").value = "";
