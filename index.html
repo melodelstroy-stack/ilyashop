@@ -290,3 +290,166 @@ function addHistoryItem(sector, color) {
         historyBox.removeChild(historyBox.lastChild);
     }
 }
+                <script>
+    let balance = 1000, isPlaying = false, betType = "number", currentRotation = 0;
+    let currentUser = null;
+    let authMode = "login";
+
+    const canvas = document.getElementById("wheelCanvas"), ctx = canvas.getContext("2d");
+    const totalSectors = 37, sectorAngle = 2 * Math.PI / totalSectors;
+
+    const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+
+    function setAuthMode(mode) {
+        authMode = mode;
+        if(mode === "login") {
+            document.getElementById("tab-login").classList.add("active");
+            document.getElementById("tab-register").classList.remove("active");
+            document.getElementById("auth-submit-btn").innerText = "Войти";
+        } else {
+            document.getElementById("tab-login").classList.remove("active");
+            document.getElementById("tab-register").classList.add("active");
+            document.getElementById("auth-submit-btn").innerText = "Создать аккаунт";
+        }
+    }
+
+    function handleAuth() {
+        const user = document.getElementById("auth-username").value.trim();
+        const pass = document.getElementById("auth-password").value.trim();
+        
+        if(!user || !pass) { alert("Заполните все поля!"); return; }
+        
+        let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
+        
+        if(authMode === "register") {
+            if(users[user]) { alert("Такой пользователь уже существует!"); return; }
+            users[user] = { password: pass, balance: 1000 };
+            localStorage.setItem("roulette_users", JSON.stringify(users));
+            alert("Регистрация успешна! Теперь войдите.");
+            setAuthMode("login");
+        } else {
+            if(!users[user] || users[user].password !== pass) { alert("Неверный логин или пароль!"); return; }
+            
+            currentUser = user;
+            balance = users[user].balance;
+            
+            document.getElementById("authBlock").style.display = "none";
+            document.getElementById("gameBlock").style.display = "block";
+            document.getElementById("user-display").innerText = currentUser;
+            document.getElementById("balance").innerText = balance;
+            
+            drawWheel();
+        }
+    }
+
+    function saveUserBalance() {
+        if(!currentUser) return;
+        let users = JSON.parse(localStorage.getItem("roulette_users")) || {};
+        if(users[currentUser]) {
+            users[currentUser].balance = balance;
+            localStorage.setItem("roulette_users", JSON.stringify(users));
+        }
+    }
+
+    function logout() {
+        if(isPlaying) return;
+        currentUser = null;
+        document.getElementById("auth-username").value = "";
+        document.getElementById("auth-password").value = "";
+        document.getElementById("authBlock").style.display = "block";
+        document.getElementById("gameBlock").style.display = "none";
+    }
+
+    function drawWheel() {
+        const e = canvas.width / 2;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let t = 0; t < totalSectors; t++) {
+            const a = t * sectorAngle - Math.PI / 2 - sectorAngle / 2, n = a + sectorAngle;
+            const num = rouletteNumbers[t];
+            if (num === 0) ctx.fillStyle = "#22c55e";
+            else if (t % 2 === 1) ctx.fillStyle = "#ef4444";
+            else ctx.fillStyle = "#1e293b";
+            ctx.beginPath(); ctx.moveTo(e, e); ctx.arc(e, e, e - 10, a, n); ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = "#2d3d5a"; ctx.lineWidth = 1; ctx.stroke();
+            ctx.save(); ctx.translate(e, e); ctx.rotate(a + sectorAngle / 2);
+            ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 20px Segoe UI"; ctx.fillText(num, e - 30, 0); ctx.restore();
+        }
+        ctx.beginPath(); ctx.arc(e, e, .6 * e, 0, 2 * Math.PI); ctx.fillStyle = "#151d30"; ctx.fill();
+        ctx.strokeStyle = "#222f4d"; ctx.lineWidth = 6; ctx.stroke();
+    }
+
+    function setBetType(e) {
+        if (isPlaying) return;
+        betType = e;
+        if ("number" === e) {
+            document.getElementById("type-num-btn").classList.add("active");
+            document.getElementById("type-color-btn").classList.remove("active");
+            document.getElementById("group-number").style.display = "block";
+            document.getElementById("group-color").style.display = "none";
+        } else {
+            document.getElementById("type-num-btn").classList.remove("active");
+            document.getElementById("type-color-btn").classList.add("active");
+            document.getElementById("group-number").style.display = "none";
+            document.getElementById("group-color").style.display = "block";
+        }
+    }
+
+    function startRoulette() {
+        if (isPlaying) return;
+        let e = parseInt(document.getElementById("bet-amount").value);
+        let t = parseInt(document.getElementById("bet-number").value);
+        let a = document.getElementById("bet-color").value;
+        if (isNaN(e) || e <= 0 || e > balance) { alert("Ошибка в ставке!"); return; }
+        if ("number" === betType && (isNaN(t) || t < 0 || t > 36)) { alert("Число от 0 до 36!"); return; }
+        balance -= e;
+        document.getElementById("balance").innerText = balance;
+        saveUserBalance();
+        document.getElementById("status").innerText = "Колесо крутится...";
+        isPlaying = true;
+        const winningIndex = Math.floor(Math.random() * totalSectors);
+        const winningNumber = rouletteNumbers[winningIndex];
+        const targetAngle = winningIndex * sectorAngle;
+        const extraSpins = 6 * 2 * Math.PI;
+        currentRotation += extraSpins + (2 * Math.PI - targetAngle) - (currentRotation % (2 * Math.PI));
+        canvas.style.transform = `rotate(${currentRotation}rad)`;
+        setTimeout(() => {
+            isPlaying = false;
+            let isWin = false;
+            let payout = 0;
+            let sectorColor = winningNumber === 0 ? "zero" : (winningIndex % 2 === 1 ? "red" : "black");
+            let colorName = winningNumber === 0 ? "Зелёное" : (sectorColor === "red" ? "Красное" : "Чёрное");
+            if (betType === "number" && t === winningNumber) {
+                isWin = true;
+                payout = e * 36;
+            } else if (betType === "color" && a === sectorColor) {
+                isWin = true;
+                payout = e * 2;
+            }
+            if (isWin) {
+                balance += payout;
+                document.getElementById("status").innerHTML = `🎉 Выпало: <b>${winningNumber} (${colorName})</b>.<br>Вы выиграли <b>${payout}</b> 🪙!`;
+            } else {
+                document.getElementById("status").innerHTML = `Выпало: <b>${winningNumber} (${colorName})</b>.<br>Повезет в следующий раз!`;
+            }
+            document.getElementById("balance").innerText = balance;
+            saveUserBalance();
+            addHistoryItem(winningNumber, sectorColor);
+        }, 6000);
+    }
+
+    function addHistoryItem(sector, color) {
+        const historyBox = document.getElementById("history-box");
+        const item = document.createElement("div");
+        item.className = "hist-item";
+        item.innerText = sector;
+        if (color === "zero") item.style.background = "#22c55e";
+        else if (color === "red") item.style.background = "#ef4444";
+        else item.style.background = "#1e293b";
+        historyBox.insertBefore(item, historyBox.firstChild);
+        if (historyBox.children.length > 10) {
+            historyBox.removeChild(historyBox.lastChild);
+        }
+    }
+</script>
+
