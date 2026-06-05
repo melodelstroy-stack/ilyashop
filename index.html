@@ -170,19 +170,14 @@ if (!window.supabase) {
             }
         }
 
-        async function handleAuth() {
-    // Исправлено: если база данных еще подгружается из сети, ждем её готовности
-    if (!supabase) {
-        const lib = window.supabase || window.supabasejs;
-        if (lib) {
-            supabase = lib.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } else {
-            alert("База данных еще загружается из сети Cloudflare, подождите 2 секунды и нажмите кнопку снова!");
-            return;
-        }
-    }
+                async function handleAuth() {
+            // Мгновенная инициализация при клике, если объект ещё не создался
+            if (!supabase && window.supabase) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
 
-    const user = document.getElementById("auth-username").value.trim();
+            const user = document.getElementById("auth-username").value.trim();
+
     const pass = document.getElementById("auth-password").value.trim();
     
     if(!user || !pass) { alert("Заполните все поля!"); return; }
