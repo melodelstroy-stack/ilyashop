@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>РУЛЕТКА х36</title>
+    <!-- Подключение облачной базы Supabase через Cloudflare -->
+    <script src="https://cloudflare.com"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: #0b0f19; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -44,8 +46,6 @@
         .history-list { display: flex; gap: 6px; flex-wrap: wrap; }
         .hist-item { padding: 4px 8px; min-width: 32px; height: 28px; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 700; color: #fff; }
     </style>
-    <!-- Подключение облачной базы Supabase -->
-    <script src="https://cloudflare.com"></script>
 </head>
 <body>
 
@@ -69,7 +69,7 @@
         </div>
     </div>
 
-    <!-- БЛОК АДМИН-ПАНЕЛИ (ОН ТЕПЕРЬ СНАРУЖИ И НЕ БУДЕТ БЛОКИРОВАТЬСЯ) -->
+    <!-- БЛОК АДМИН-ПАНЕЛИ -->
     <div class="game-card" id="adminBlock" style="display: none; max-width: 600px; margin: 20px auto;">
         <div class="top-bar">
             <div class="logo" style="color: #f59e0b;">⚙️ АДМИН-ПАНЕЛЬ</div>
@@ -129,13 +129,13 @@
         
         const canvas = document.getElementById("wheelCanvas"), ctx = canvas.getContext("2d");
         const totalSectors = 37, sectorAngle = 2 * Math.PI / totalSectors;
-        
-const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+        const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+
         // Подключение к облаку Supabase
-        const SUPABASE_URL = "https://qqwplsruelfaojkkkrsx.supabase.co";
+        const SUPABASE_URL = "https://supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxd3Bsc3J1ZWxmYW9qa2trcnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MDI0NDIsImV4cCI6MjA5NjE3ODQ0Mn0.Sq6i4902eabGElqoGO2QqHlDNaiL2LJwJ8eVpek0pwk";
         const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
+
         function setAuthMode(mode) {
             authMode = mode;
             if(mode === "login") {
@@ -149,50 +149,48 @@ const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11,
             }
         }
 
-       async function handleAuth() {
-    const user = document.getElementById("auth-username").value.trim();
-    const pass = document.getElementById("auth-password").value.trim();
-    
-    if(!user || !pass) { alert("Заполните все поля!"); return; }
-    
-    if(user === "superadmin" && pass === "admin123") {
-        document.getElementById("authBlock").style.display = "none";
-        document.getElementById("adminBlock").style.setProperty("display", "block", "important");
-        renderAdminPanel();
-        return;
-    }
-
-    if(authMode === "register") {
-        let { data: existingUser } = await supabase.from('users').select('*').eq('username', user).maybeSingle();
-        if(existingUser) { alert("Такой пользователь уже существует!"); return; }
-
-        let { error } = await supabase.from('users').insert([{ username: user, password: pass, balance: 1000 }]);
-        if(error) { alert("Ошибка базы: " + error.message); return; }
-
-        alert("Регистрация успешна! Теперь войдите.");
-        setAuthMode("login");
-    } else {
-        let { data: loggedUser } = await supabase.from('users').select('*').eq('username', user).maybeSingle();
-        if(!loggedUser || loggedUser.password !== pass) { alert("Неверный логин или пароль!"); return; }
-        
-        currentUser = user;
-        balance = loggedUser.balance;
-        
-        document.getElementById("authBlock").style.display = "none";
-        document.getElementById("gameBlock").style.display = "block";
-        document.getElementById("user-display").innerText = currentUser;
-        document.getElementById("balance").innerText = balance;
-        
-        drawWheel();
-    }
-}
-
-
-
-           async function saveUserBalance() {
-    if(!currentUser) return;
-    await supabase.from('users').update({ balance: balance }).eq('username', currentUser);
+        async function handleAuth() {
+            const user = document.getElementById("auth-username").value.trim();
+            const pass = document.getElementById("auth-password").value.trim();
+            
+            if(!user || !pass) { alert("Заполните все поля!"); return; }
+            
+            if(user === "superadmin" && pass === "admin123") {
+                document.getElementById("authBlock").style.display = "none";
+                document.getElementById("adminBlock").style.setProperty("display", "block", "important");
+                renderAdminPanel();
+                return;
             }
+
+            if(authMode === "register") {
+                let { data: existingUser } = await supabase.from('users').select('*').eq('username', user).maybeSingle();
+                if(existingUser) { alert("Такой... пользователь уже существует!"); return; }
+
+                let { error } = await supabase.from('users').insert([{ username: user, password: pass, balance: 1000 }]);
+                if(error) { alert("Ошибка базы: " + error.message); return; }
+
+                alert("Регистрация успешна! Теперь войдите.");
+                setAuthMode("login");
+            } else {
+                let { data: loggedUser } = await supabase.from('users').select('*').eq('username', user).maybeSingle();
+                if(!loggedUser || loggedUser.password !== pass) { alert("Неверный логин или пароль!"); return; }
+                
+                currentUser = user;
+                balance = loggedUser.balance;
+                
+                document.getElementById("authBlock").style.display = "none";
+                document.getElementById("gameBlock").style.display = "block";
+                document.getElementById("user-display").innerText = currentUser;
+                document.getElementById("balance").innerText = balance;
+                
+                drawWheel();
+            }
+        }
+
+        async function saveUserBalance() {
+            if(!currentUser) return;
+            await supabase.from('users').update({ balance: balance }).eq('username', currentUser);
+        }
 
         function logout() {
             if(isPlaying) return;
@@ -240,7 +238,7 @@ const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11,
             }
         }
         
-async function startRoulette() {
+        async function startRoulette() {
             if (isPlaying) return;
             let e = parseInt(document.getElementById("bet-amount").value);
             let t = parseInt(document.getElementById("bet-number").value);
@@ -251,7 +249,7 @@ async function startRoulette() {
             
             balance -= e;
             document.getElementById("balance").innerText = balance;
-await saveUserBalance();
+            await saveUserBalance();
             
             document.getElementById("status").innerText = "Колесо крутится...";
             isPlaying = true;
@@ -265,7 +263,7 @@ await saveUserBalance();
 
             canvas.style.transform = "rotate(" + currentRotation + "rad)";
 
-            setTimeout(() => {
+            setTimeout(async () => {
                 isPlaying = false;
                 let isWin = false;
                 let payout = 0;
@@ -289,7 +287,7 @@ await saveUserBalance();
                 }
                 
                 document.getElementById("balance").innerText = balance;
-await saveUserBalance();
+                await saveUserBalance();
                 addHistoryItem(winningNumber, sectorColor);
             }, 6000); 
         }
@@ -311,18 +309,15 @@ await saveUserBalance();
             }
         }
 
-async function renderAdminPanel() {
-    const listContainer = document.getElementById("admin-users-list");
-    listContainer.innerHTML = "<div style='color: #64748b; text-align:center;'>Загрузка игроков из сети...</div>";
-    
-    let { data: users, error } = await supabase.from('users').select('*').order('username', { ascending: true });
-    listContainer.innerHTML = "";
-    
-    if(!users || users.length === 0) {
-        listContainer.innerHTML = "<div style='color: #64748b; text-align:center; padding:10px;'>Игроков в базе пока нет</div>";
-        return;
-    }
-    
+        async function renderAdminPanel() {
+            const listContainer = document.getElementById("admin-users-list");
+            listContainer.innerHTML = "<div style='color: #64748b; text-align:center;'>Загрузка игроков из сети...</div>";
+            
+            let { data: users, error } = await supabase.from('users').select('*').order('username', { ascending: true });
+            listContainer.innerHTML = "";
+            
+            if(!users || users.length === 0) {
+                listContainer.innerHTML = "<div style='color: #64748b; text-align:center; padding:10px;'>Игроков в базе пока нет</div>";
     users.forEach(user => {
         const userRow = document.createElement("div");
         userRow.style.display = "flex";
