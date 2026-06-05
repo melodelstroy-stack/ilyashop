@@ -170,13 +170,21 @@ if (!window.supabase) {
             }
         }
 
-                async function handleAuth() {
-            // Мгновенная инициализация при клике, если объект ещё не создался
-            if (!supabase && window.supabase) {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                       async function handleAuth() {
+            // Находим библиотеку везде, где она могла зарегистрироваться в браузере
+            const currentLib = window.supabase || window.supabasejs || (window.supabaseLib);
+            
+            if (!supabase && currentLib) {
+                supabase = currentLib.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+            
+            if (!supabase) {
+                alert("Сеть еще не успела скачать файл базы данных. Подожди буквально 3 секунды и нажми еще раз!");
+                return;
             }
 
             const user = document.getElementById("auth-username").value.trim();
+
 
     const pass = document.getElementById("auth-password").value.trim();
     
