@@ -20,7 +20,34 @@
         .auth-btn:hover { background: #16a34a; }
         .game-card { display: none; background: #151d30; border: 1px solid #222f4d; border-radius: 24px; padding: 30px; max-width: 520px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,.5); text-align: center; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #1e2942; padding: 12px 20px; border-radius: 14px; }
-        .logo { font-weight: 800; font-size: 18px; color: #22c55e; }
+.logo { 
+    font-weight: 900; 
+    font-size: 22px; 
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+}
+
+.scam-logo {
+    color: #ef4444;
+    text-shadow: 0 0 5px #ef4444, 0 0 15px #ef4444, 0 0 30px #b91c1c;
+    animation: flicker 3s infinite alternate;
+}
+
+.scam-logo span {
+    color: #3b82f6;
+    text-shadow: 0 0 5px #3b82f6, 0 0 15px #3b82f6;
+}
+
+/* Эффект мигания неоновой вывески, как в старых клубах */
+@keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow: 0 0 5px #ef4444, 0 0 15px #ef4444, 0 0 30px #b91c1c;
+    }
+    20%, 24%, 55% {        
+        text-shadow: none;
+        color: #7f1d1d;
+    }
+}
         .user-info { display: flex; align-items: center; gap: 15px; }
         .username-box { font-size: 14px; color: #94a3b8; font-weight: 600; }
         .balance-box { font-weight: 700; color: #22c55e; font-size: 18px; }
@@ -82,7 +109,7 @@
     <!-- ИГРОВОЙ БЛОК -->
     <div class="game-card" id="gameBlock">
         <div class="top-bar">
-            <div class="logo">👑 РУЛЕТКА х36</div>
+<div class="logo scam-logo">🤡 НАЕБАЛОВО.<span>РУ</span></div>
             <div class="user-info">
                 <div class="username-box"><span id="user-display">Игрок</span> <button class="btn-logout" onclick="logout()">Выйти</button></div>
                 <div class="balance-box"><span id="balance">1000</span> 🪙</div>
