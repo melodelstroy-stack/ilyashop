@@ -136,7 +136,8 @@ const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxd3Bsc3J1ZWxmYW9qa2trcnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MDI0NDIsImV4cCI6MjA5NjE3ODQ0Mn0.Sq6i4902eabGElqoGO2QqHlDNaiL2LJwJ8eVpek0pwk";
 
 // Безопасное подключение через CDN Cloudflare (cdnjs)
-const supabaseLib = window.supabase || window.supabasejs;
+// Замените старый блок на эту простую инициализацию:
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Прямая инициализация: если библиотека уже загружена в head
 let supabase = supabaseLib ? supabaseLib.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
