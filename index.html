@@ -135,6 +135,17 @@
 const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxd3Bsc3J1ZWxmYW9qa2trcnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MDI0NDIsImV4cCI6MjA5NjE3ODQ0Mn0.Sq6i4902eabGElqoGO2QqHlDNaiL2LJwJ8eVpek0pwk";
 
+// Если библиотека сверху не загрузилась, этот код сам добавит её прямо сюда
+if (!window.supabase) {
+    const resScript = document.createElement('script');
+    resScript.src = "https://cloudflare.com";
+    resScript.async = false;
+    document.head.appendChild(resScript);
+}
+
+// Ждем микросекунду, чтобы браузер точно успел переварить скрипт
+await new Promise(r => setTimeout(r, 100));
+
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function setAuthMode(mode) {
