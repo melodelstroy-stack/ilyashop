@@ -171,20 +171,32 @@ if (!window.supabase && !window.supabasejs) {
         }
 
         async function handleAuth() {
-            const user = document.getElementById("auth-username").value.trim();
-            const pass = document.getElementById("auth-password").value.trim();
-            
-            if(!user || !pass) { alert("Заполните все поля!"); return; }
-            
-            if(user === "superadmin" && pass === "admin123") {
-                document.getElementById("authBlock").style.display = "none";
-                document.getElementById("adminBlock").style.setProperty("display", "block", "important");
-                renderAdminPanel();
-                return;
-            }
+    // Исправлено: если база данных еще подгружается из сети, ждем её готовности
+    if (!supabase) {
+        const lib = window.supabase || window.supabasejs;
+        if (lib) {
+            supabase = lib.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } else {
+            alert("База данных еще загружается из сети Cloudflare, подождите 2 секунды и нажмите кнопку снова!");
+            return;
+        }
+    }
 
-            if(authMode === "register") {
-                let { data: existingUser } = await supabase.from('users').select('*').eq('username', user).maybeSingle();
+    const user = document.getElementById("auth-username").value.trim();
+    const pass = document.getElementById("auth-password").value.trim();
+    
+    if(!user || !pass) { alert("Заполните все поля!"); return; }
+    
+    if(user === "superadmin" && pass === "admin123") {
+        document.getElementById("authBlock").style.display = "none";
+        document.getElementById("adminBlock").style.setProperty("display", "block", "important");
+        renderAdminPanel();
+        return;
+    }
+
+    if(authMode === "register") {
+        let { data: existingUser } = await supabase.from('users').select('*').eq('username', user).maybeSingle();
+
                 if(existingUser) { alert("Такой... пользователь уже существует!"); return; }
 
                 let { error } = await supabase.from('users').insert([{ username: user, password: pass, balance: 1000 }]);
