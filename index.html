@@ -131,30 +131,30 @@
         const totalSectors = 37, sectorAngle = 2 * Math.PI / totalSectors;
         const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
 
-     // Подключение к облаку Supabase
+   // Подключение к облаку Supabase
 const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxd3Bsc3J1ZWxmYW9qa2trcnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MDI0NDIsImV4cCI6MjA5NjE3ODQ0Mn0.Sq6i4902eabGElqoGO2QqHlDNaiL2LJwJ8eVpek0pwk";
 
-// Создаем пустой объект, чтобы handleAuth не ругался на initialization
 let supabase;
 
 // Функция, которая создаст подключение, как только библиотека скачается
 function initSupabase() {
-    const lib = window.supabase || window.supabasejs;
+    const lib = window.supabase;
     if (lib) {
         supabase = lib.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 }
 
-// Принудительно и правильно загружаем скрипт без зависания страницы
-if (!window.supabase && !window.supabasejs) {
+// Насильно загружаем правильный рабочий JS-файл библиотеки Supabase
+if (!window.supabase) {
     const resScript = document.createElement('script');
-    resScript.src = "https://cloudflare.com";
+    resScript.src = "https://jsdelivr.net";
     resScript.onload = initSupabase;
     document.head.appendChild(resScript);
 } else {
     initSupabase();
 }
+
 
 
         function setAuthMode(mode) {
