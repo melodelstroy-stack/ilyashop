@@ -148,12 +148,14 @@ function initSupabase() {
 // Насильно загружаем правильный рабочий JS-файл библиотеки Supabase
 if (!window.supabase) {
     const resScript = document.createElement('script');
-    resScript.src = "https://jsdelivr.net";
+    // Заменяем jsdelivr на рабочий в РФ Cloudflare cdnjs
+    resScript.src = "https://cloudflare.com";
     resScript.onload = initSupabase;
     document.head.appendChild(resScript);
 } else {
     initSupabase();
 }
+
 
 
 
